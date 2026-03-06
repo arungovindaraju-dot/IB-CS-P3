@@ -1,0 +1,2204 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IB CS 2026 | ETHICAL HACKING — TERMINAL STUDY GUIDE</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   ROOT VARIABLES — Pure hacker terminal palette
+   ============================================================ */
+:root {
+  --black:    #000000;
+  --dark:     #050505;
+  --surface:  #0a0a0a;
+  --card:     #0d0d0d;
+  --border:   #1a3a1a;
+  --green:    #00ff41;
+  --green2:   #39ff14;
+  --green-dim:#00aa2a;
+  --green-faint: #003310;
+  --amber:    #ffb000;
+  --red:      #ff2222;
+  --white:    #e0ffe0;
+  --muted:    #2a5a2a;
+  --glow:     0 0 10px #00ff41, 0 0 20px #00ff4155;
+  --glow-sm:  0 0 6px #00ff4188;
+}
+
+/* ============================================================
+GLOBAL RESET & BASE
+============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+font-family: ‘Share Tech Mono’, monospace;
+background: var(–black);
+color: var(–green);
+overflow-x: hidden;
+cursor: crosshair;
+}
+
+/* Custom neon green scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(–black); }
+::-webkit-scrollbar-thumb { background: var(–green-dim); border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: var(–green); box-shadow: var(–glow-sm); }
+
+/* ============================================================
+MATRIX RAIN CANVAS (background layer)
+============================================================ */
+#matrixCanvas {
+position: fixed;
+top: 0; left: 0;
+width: 100%; height: 100%;
+z-index: 0;
+opacity: 0.07;
+pointer-events: none;
+}
+
+/* Scanline overlay */
+body::after {
+content: ‘’;
+position: fixed; inset: 0;
+background: repeating-linear-gradient(
+0deg,
+transparent,
+transparent 3px,
+rgba(0,255,65,0.015) 3px,
+rgba(0,255,65,0.015) 4px
+);
+pointer-events: none;
+z-index: 9998;
+}
+
+/* ============================================================
+HERO — Boot screen
+============================================================ */
+#hero {
+position: relative; z-index: 10;
+min-height: 100vh;
+display: flex; flex-direction: column;
+align-items: center; justify-content: center;
+text-align: center;
+padding: 2rem;
+border-bottom: 1px solid var(–border);
+}
+
+.boot-frame {
+border: 1px solid var(–green-dim);
+padding: 2.5rem 3rem;
+max-width: 760px;
+width: 100%;
+background: rgba(0,20,0,0.6);
+box-shadow: 0 0 40px rgba(0,255,65,0.1), inset 0 0 40px rgba(0,255,65,0.03);
+position: relative;
+}
+
+.boot-frame::before {
+content: ‘[ CYBERHEALTH SECURITY — CLASSIFIED TERMINAL v2.6 ]’;
+position: absolute;
+top: -0.65em; left: 1rem;
+font-size: 0.7rem;
+color: var(–green);
+background: var(–black);
+padding: 0 0.5rem;
+letter-spacing: 0.1em;
+}
+
+.boot-frame::after {
+content: ‘[ PRESS ANY KEY OR SCROLL TO CONTINUE ]’;
+position: absolute;
+bottom: -0.65em; right: 1rem;
+font-size: 0.65rem;
+color: var(–green-dim);
+background: var(–black);
+padding: 0 0.5rem;
+letter-spacing: 0.05em;
+animation: blink 1.2s step-end infinite;
+}
+
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+.boot-line {
+font-family: ‘VT323’, monospace;
+font-size: 0.9rem;
+color: var(–green-dim);
+letter-spacing: 0.08em;
+margin-bottom: 0.3rem;
+text-align: left;
+opacity: 0;
+animation: bootIn 0.1s ease forwards;
+}
+
+.boot-line:nth-child(1)  { animation-delay: 0.1s; }
+.boot-line:nth-child(2)  { animation-delay: 0.4s; }
+.boot-line:nth-child(3)  { animation-delay: 0.7s; }
+.boot-line:nth-child(4)  { animation-delay: 1.0s; }
+.boot-line:nth-child(5)  { animation-delay: 1.3s; }
+.boot-line:nth-child(6)  { animation-delay: 1.6s; }
+
+@keyframes bootIn { to { opacity: 1; } }
+
+.hero-title {
+font-family: ‘VT323’, monospace;
+font-size: clamp(2.8rem, 8vw, 5.5rem);
+color: var(–green);
+text-shadow: var(–glow);
+letter-spacing: 0.05em;
+line-height: 1;
+margin: 1.5rem 0 0.5rem;
+animation: titlePulse 3s ease-in-out infinite;
+}
+
+@keyframes titlePulse {
+0%,100% { text-shadow: 0 0 10px #00ff41, 0 0 20px #00ff4155; }
+50%     { text-shadow: 0 0 20px #00ff41, 0 0 40px #00ff4188, 0 0 60px #00ff4133; }
+}
+
+.hero-sub {
+font-size: 0.85rem;
+color: var(–green-dim);
+letter-spacing: 0.2em;
+text-transform: uppercase;
+margin-bottom: 2rem;
+}
+
+.hero-pills {
+display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+margin-bottom: 1.5rem;
+}
+
+.pill {
+border: 1px solid var(–green-dim);
+padding: 0.3em 0.9em;
+font-size: 0.72rem;
+color: var(–green-dim);
+letter-spacing: 0.1em;
+}
+
+.pill span { color: var(–green); }
+
+.scroll-hint {
+font-size: 0.7rem;
+color: var(–muted);
+letter-spacing: 0.2em;
+animation: bounce 2s ease-in-out infinite;
+margin-top: 1rem;
+}
+
+@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(5px)} }
+
+/* ============================================================
+STICKY NAV
+============================================================ */
+nav {
+position: sticky; top: 0; z-index: 1000;
+background: rgba(0,0,0,0.97);
+border-bottom: 1px solid var(–border);
+padding: 0.6rem 1rem;
+display: flex; gap: 0.3rem; flex-wrap: wrap; justify-content: center;
+}
+
+nav a {
+color: var(–green-dim);
+text-decoration: none;
+font-size: 0.72rem;
+letter-spacing: 0.08em;
+padding: 0.3em 0.8em;
+border: 1px solid transparent;
+transition: all 0.2s;
+text-transform: uppercase;
+}
+
+nav a:hover {
+color: var(–green);
+border-color: var(–green-dim);
+background: var(–green-faint);
+text-shadow: var(–glow-sm);
+}
+
+/* ============================================================
+MAIN LAYOUT
+============================================================ */
+main {
+position: relative; z-index: 10;
+max-width: 1100px;
+margin: 0 auto;
+padding: 4rem 1.5rem;
+}
+
+section { margin-bottom: 6rem; }
+
+/* ============================================================
+SECTION HEADER — terminal prompt style
+============================================================ */
+.sec-header {
+display: flex; align-items: center; gap: 0.8rem;
+margin-bottom: 2.5rem;
+border-bottom: 1px solid var(–border);
+padding-bottom: 1rem;
+}
+
+.sec-prompt {
+color: var(–green-dim);
+font-size: 1rem;
+}
+
+.sec-prompt::before { content: ’root@cyberhealth:~# ’; color: var(–green); }
+
+.sec-title {
+font-family: ‘VT323’, monospace;
+font-size: 2rem;
+color: var(–green);
+text-shadow: var(–glow-sm);
+letter-spacing: 0.05em;
+}
+
+/* ============================================================
+CARDS
+============================================================ */
+.card-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+gap: 1rem;
+}
+
+.card {
+background: var(–card);
+border: 1px solid var(–border);
+padding: 1.3rem;
+position: relative;
+overflow: hidden;
+transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+}
+
+.card::before {
+content: ‘’;
+position: absolute; top: 0; left: 0; right: 0; height: 1px;
+background: var(–green);
+transform: scaleX(0);
+transform-origin: left;
+transition: transform 0.4s ease;
+}
+
+.card:hover {
+border-color: var(–green-dim);
+box-shadow: var(–glow-sm);
+transform: translateY(-3px);
+}
+
+.card:hover::before { transform: scaleX(1); }
+
+.card-tag {
+font-size: 0.65rem;
+color: var(–black);
+background: var(–green);
+padding: 0.1em 0.5em;
+letter-spacing: 0.1em;
+margin-bottom: 0.7rem;
+display: inline-block;
+}
+
+.card h3 {
+font-family: ‘VT323’, monospace;
+font-size: 1.2rem;
+color: var(–green);
+margin-bottom: 0.4rem;
+letter-spacing: 0.05em;
+}
+
+.card p { font-size: 0.82rem; color: var(–white); line-height: 1.6; opacity: 0.8; }
+
+/* ============================================================
+PTES ACCORDION TIMELINE
+============================================================ */
+.ptes-wrap { display: flex; flex-direction: column; gap: 0.7rem; }
+
+.phase-item {
+border: 1px solid var(–border);
+background: var(–card);
+overflow: hidden;
+transition: border-color 0.3s;
+}
+
+.phase-item.open { border-color: var(–green-dim); }
+
+.phase-head {
+display: flex; align-items: center; gap: 1rem;
+padding: 1rem 1.2rem;
+cursor: pointer;
+transition: background 0.2s;
+}
+
+.phase-head:hover { background: var(–green-faint); }
+
+.phase-id {
+font-size: 0.7rem;
+color: var(–black);
+background: var(–green-dim);
+padding: 0.15em 0.6em;
+letter-spacing: 0.1em;
+flex-shrink: 0;
+}
+
+.phase-item.open .phase-id { background: var(–green); }
+
+.phase-name {
+font-family: ‘VT323’, monospace;
+font-size: 1.15rem;
+color: var(–green);
+flex: 1;
+letter-spacing: 0.05em;
+}
+
+.phase-chevron {
+color: var(–muted);
+font-size: 0.9rem;
+transition: transform 0.3s;
+font-size: 1.1rem;
+}
+
+.phase-item.open .phase-chevron { transform: rotate(90deg); color: var(–green); }
+
+.phase-body {
+max-height: 0; overflow: hidden;
+transition: max-height 0.45s cubic-bezier(0.4,0,0.2,1);
+border-top: 0px solid transparent;
+}
+
+.phase-item.open .phase-body {
+max-height: 700px;
+border-top: 1px solid var(–border);
+}
+
+.phase-content {
+padding: 1.2rem 1.4rem;
+font-size: 0.85rem;
+color: var(–white);
+opacity: 0.85;
+line-height: 1.7;
+}
+
+.phase-content strong { color: var(–green); }
+.phase-content ul { padding-left: 1.2rem; margin-top: 0.5rem; }
+.phase-content li { margin-bottom: 0.3rem; }
+.phase-content li::marker { color: var(–green); content: ’> ’; }
+
+/* ============================================================
+ATTACK VISUALIZER
+============================================================ */
+.attack-vis {
+border: 1px solid var(–border);
+background: var(–card);
+padding: 1.5rem;
+margin-bottom: 1rem;
+}
+
+.vis-title {
+font-family: ‘VT323’, monospace;
+font-size: 1.1rem;
+color: var(–amber);
+margin-bottom: 1rem;
+letter-spacing: 0.05em;
+}
+
+.vis-flow {
+display: flex; align-items: center; gap: 0.5rem;
+flex-wrap: wrap;
+margin-bottom: 0.8rem;
+}
+
+.vis-node {
+border: 1px solid var(–green-dim);
+padding: 0.4em 0.8em;
+font-size: 0.75rem;
+color: var(–green);
+background: var(–green-faint);
+white-space: nowrap;
+animation: nodeFlicker 4s ease-in-out infinite;
+}
+
+.vis-node.danger {
+border-color: var(–red);
+color: var(–red);
+background: rgba(255,34,34,0.06);
+animation: dangerFlicker 2s ease-in-out infinite;
+}
+
+@keyframes nodeFlicker {
+0%,100%{box-shadow:0 0 4px rgba(0,255,65,0.2)}
+50%{box-shadow:0 0 12px rgba(0,255,65,0.5)}
+}
+@keyframes dangerFlicker {
+0%,100%{box-shadow:0 0 4px rgba(255,34,34,0.2)}
+50%{box-shadow:0 0 12px rgba(255,34,34,0.5)}
+}
+
+.vis-arrow { color: var(–muted); font-size: 1rem; }
+
+.vis-desc { font-size: 0.78rem; color: var(–white); opacity: 0.7; margin-top: 0.3rem; }
+
+/* ============================================================
+GLOSSARY
+============================================================ */
+.glos-search {
+width: 100%;
+background: var(–card);
+border: 1px solid var(–border);
+color: var(–green);
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 0.85rem;
+padding: 0.7em 1em;
+margin-bottom: 1.2rem;
+outline: none;
+transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.glos-search::placeholder { color: var(–muted); }
+.glos-search:focus { border-color: var(–green-dim); box-shadow: var(–glow-sm); }
+
+/* Input cursor blink */
+.glos-search::after { content: ‘_’; animation: blink 1s step-end infinite; }
+
+.glos-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+gap: 0.8rem;
+}
+
+.glos-card {
+background: var(–card);
+border: 1px solid var(–border);
+padding: 0.9rem 1.1rem;
+transition: border-color 0.2s;
+}
+
+.glos-card:hover { border-color: var(–green-dim); }
+
+.glos-term {
+font-family: ‘VT323’, monospace;
+font-size: 1.05rem;
+color: var(–green);
+text-shadow: var(–glow-sm);
+margin-bottom: 0.3rem;
+}
+
+.glos-def { font-size: 0.8rem; color: var(–white); opacity: 0.75; line-height: 1.5; }
+
+/* ============================================================
+PRACTICE QUESTIONS
+============================================================ */
+.q-list { display: flex; flex-direction: column; gap: 0.9rem; }
+
+.q-item {
+background: var(–card);
+border: 1px solid var(–border);
+overflow: hidden;
+}
+
+.q-head {
+display: flex; align-items: flex-start; gap: 0.8rem;
+padding: 1rem 1.2rem;
+cursor: pointer;
+transition: background 0.2s;
+}
+
+.q-head:hover { background: var(–green-faint); }
+
+.q-mark {
+font-size: 0.65rem;
+background: var(–green-dim);
+color: var(–black);
+padding: 0.15em 0.5em;
+flex-shrink: 0;
+margin-top: 0.15rem;
+letter-spacing: 0.05em;
+}
+
+.q-text { font-size: 0.88rem; color: var(–white); flex: 1; opacity: 0.9; line-height: 1.5; }
+
+.q-tog { color: var(–muted); transition: transform 0.3s; flex-shrink: 0; }
+.q-item.open .q-tog { transform: rotate(45deg); color: var(–green); }
+
+.q-ans { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+.q-item.open .q-ans { max-height: 1200px; }
+
+.q-ans-inner {
+border-top: 1px solid var(–border);
+padding: 1rem 1.2rem;
+background: rgba(0,40,0,0.3);
+}
+
+.q-ans-label {
+font-size: 0.65rem;
+color: var(–green);
+letter-spacing: 0.15em;
+margin-bottom: 0.6rem;
+display: block;
+}
+
+.q-ans-inner p { font-size: 0.82rem; color: var(–white); opacity: 0.85; margin-bottom: 0.4rem; line-height: 1.6; }
+.q-ans-inner ul { padding-left: 1.1rem; }
+.q-ans-inner li { font-size: 0.82rem; color: var(–white); opacity: 0.85; margin-bottom: 0.3rem; }
+.q-ans-inner li::marker { color: var(–green); content: ’>> ’; }
+
+/* ============================================================
+QUIZ
+============================================================ */
+.quiz-shell {
+border: 1px solid var(–border);
+background: var(–card);
+padding: 2rem;
+}
+
+.quiz-shell-header {
+display: flex; align-items: center; gap: 1rem;
+margin-bottom: 1.5rem; flex-wrap: wrap;
+}
+
+.quiz-bar-wrap {
+flex: 1; min-width: 180px;
+height: 3px;
+background: var(–border);
+position: relative;
+}
+
+.quiz-bar-fill {
+height: 100%;
+background: var(–green);
+box-shadow: var(–glow-sm);
+transition: width 0.4s ease;
+}
+
+.quiz-stat {
+font-size: 0.75rem;
+color: var(–green-dim);
+}
+
+.quiz-stat span { color: var(–green); }
+
+.quiz-q { font-family: ‘VT323’, monospace; font-size: 1.35rem; color: var(–green); margin-bottom: 1.3rem; line-height: 1.3; }
+
+.quiz-opts {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 0.6rem;
+margin-bottom: 1rem;
+}
+@media(max-width:540px){.quiz-opts{grid-template-columns:1fr;}}
+
+.quiz-btn {
+background: var(–surface);
+border: 1px solid var(–border);
+color: var(–white);
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 0.82rem;
+padding: 0.75em 1em;
+cursor: pointer;
+text-align: left;
+transition: all 0.2s;
+line-height: 1.4;
+}
+
+.quiz-btn:hover:not(:disabled) {
+border-color: var(–green-dim);
+background: var(–green-faint);
+color: var(–green);
+}
+
+.quiz-btn.correct {
+border-color: var(–green);
+background: rgba(0,255,65,0.1);
+color: var(–green);
+text-shadow: var(–glow-sm);
+}
+
+.quiz-btn.wrong {
+border-color: var(–red);
+background: rgba(255,34,34,0.1);
+color: var(–red);
+}
+
+.quiz-fb {
+font-size: 0.82rem;
+color: var(–white);
+background: rgba(0,30,0,0.5);
+border: 1px solid var(–border);
+border-left: 3px solid var(–green);
+padding: 0.7em 1em;
+margin-bottom: 1rem;
+display: none;
+opacity: 0.9;
+line-height: 1.5;
+}
+
+.quiz-fb.show { display: block; }
+
+.quiz-next {
+background: transparent;
+border: 1px solid var(–green-dim);
+color: var(–green);
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 0.78rem;
+padding: 0.55em 1.8em;
+cursor: pointer;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+display: none;
+transition: all 0.2s;
+}
+
+.quiz-next:hover { background: var(–green-faint); box-shadow: var(–glow-sm); }
+
+.quiz-result { display: none; text-align: center; padding: 2rem 0; }
+
+.result-num {
+font-family: ‘VT323’, monospace;
+font-size: 5rem;
+color: var(–green);
+text-shadow: var(–glow);
+display: block;
+}
+
+.result-txt { font-size: 0.9rem; color: var(–white); opacity: 0.8; margin: 0.5rem 0 1.5rem; }
+
+.quiz-restart {
+background: var(–green-faint);
+border: 1px solid var(–green);
+color: var(–green);
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 0.8rem;
+padding: 0.6em 2em;
+cursor: pointer;
+letter-spacing: 0.1em;
+transition: all 0.2s;
+}
+.quiz-restart:hover { box-shadow: var(–glow); }
+
+/* ============================================================
+EXAM TIPS
+============================================================ */
+.tips-list { display: flex; flex-direction: column; gap: 0.8rem; }
+
+.tip-row {
+display: flex; gap: 1rem; align-items: flex-start;
+background: var(–card);
+border: 1px solid var(–border);
+border-left: 2px solid var(–green-dim);
+padding: 1rem 1.2rem;
+transition: border-left-color 0.3s;
+}
+
+.tip-row:hover { border-left-color: var(–green); }
+
+.tip-ico { font-size: 1.3rem; flex-shrink: 0; margin-top: 0.1rem; }
+
+.tip-body h4 { font-family: ‘VT323’, monospace; font-size: 1.05rem; color: var(–green); margin-bottom: 0.2rem; }
+.tip-body p { font-size: 0.82rem; color: var(–white); opacity: 0.8; line-height: 1.6; }
+
+/* ============================================================
+HIGHLIGHT / WARN BOXES
+============================================================ */
+.hl-box {
+border: 1px solid var(–green-dim);
+border-left: 3px solid var(–green);
+background: rgba(0,40,0,0.3);
+padding: 1rem 1.2rem;
+margin: 1rem 0;
+font-size: 0.85rem;
+color: var(–white);
+opacity: 0.9;
+line-height: 1.6;
+}
+
+.hl-box strong { color: var(–green); display: block; font-size: 0.72rem; letter-spacing: 0.1em; margin-bottom: 0.3rem; }
+
+.warn-box {
+border: 1px solid rgba(255,176,0,0.3);
+border-left: 3px solid var(–amber);
+background: rgba(30,20,0,0.4);
+padding: 1rem 1.2rem;
+margin: 1rem 0;
+font-size: 0.85rem;
+color: var(–white);
+opacity: 0.9;
+line-height: 1.6;
+}
+
+.warn-box strong { color: var(–amber); display: block; font-size: 0.72rem; letter-spacing: 0.1em; margin-bottom: 0.3rem; }
+
+/* ============================================================
+ETHICS GRID
+============================================================ */
+.ethics-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+gap: 0.9rem;
+}
+
+.eth-card {
+background: var(–card);
+border: 1px solid var(–border);
+border-top: 2px solid var(–green-dim);
+padding: 1.1rem;
+transition: border-top-color 0.3s, transform 0.2s;
+}
+
+.eth-card:hover { border-top-color: var(–green); transform: translateY(-2px); }
+.eth-card.amber { border-top-color: rgba(255,176,0,0.5); }
+.eth-card.amber:hover { border-top-color: var(–amber); }
+.eth-card.red { border-top-color: rgba(255,34,34,0.4); }
+.eth-card.red:hover { border-top-color: var(–red); }
+
+.eth-card h4 { font-family: ‘VT323’, monospace; font-size: 1.05rem; color: var(–green); margin-bottom: 0.35rem; }
+.eth-card.amber h4 { color: var(–amber); }
+.eth-card.red h4 { color: var(–red); }
+.eth-card p { font-size: 0.8rem; color: var(–white); opacity: 0.75; line-height: 1.5; }
+
+/* ============================================================
+██████╗  █████╗ ███╗   ███╗███████╗
+██╔════╝ ██╔══██╗████╗ ████║██╔════╝
+██║  ███╗███████║██╔████╔██║█████╗
+██║   ██║██╔══██║██║╚██╔╝██║██╔══╝
+╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗
+╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝
+THE HACKER TERMINAL GAME
+============================================================ */
+#game-section {
+margin-bottom: 6rem;
+}
+
+.game-container {
+border: 1px solid var(–green-dim);
+background: var(–black);
+box-shadow: 0 0 30px rgba(0,255,65,0.1);
+overflow: hidden;
+}
+
+/* Game title bar */
+.game-titlebar {
+background: var(–green-dim);
+padding: 0.4rem 1rem;
+display: flex; align-items: center; justify-content: space-between;
+}
+
+.game-titlebar-text {
+font-family: ‘VT323’, monospace;
+font-size: 1rem;
+color: var(–black);
+letter-spacing: 0.1em;
+}
+
+.game-titlebar-dots { display: flex; gap: 0.4rem; }
+.game-dot {
+width: 10px; height: 10px;
+border-radius: 50%;
+background: var(–black);
+opacity: 0.4;
+}
+
+/* Game layout: sidebar + main */
+.game-layout {
+display: grid;
+grid-template-columns: 220px 1fr;
+min-height: 500px;
+}
+
+@media(max-width:680px){ .game-layout { grid-template-columns: 1fr; } }
+
+/* Sidebar — mission list */
+.game-sidebar {
+border-right: 1px solid var(–border);
+padding: 1rem;
+display: flex; flex-direction: column; gap: 0.4rem;
+}
+
+.sidebar-header {
+font-size: 0.65rem;
+color: var(–green-dim);
+letter-spacing: 0.15em;
+margin-bottom: 0.5rem;
+text-transform: uppercase;
+}
+
+.mission-btn {
+background: transparent;
+border: 1px solid var(–border);
+color: var(–muted);
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 0.74rem;
+padding: 0.5em 0.8em;
+cursor: pointer;
+text-align: left;
+letter-spacing: 0.03em;
+transition: all 0.2s;
+position: relative;
+}
+
+.mission-btn::before { content: ’□ ’; }
+.mission-btn.completed::before { content: ’■ ’; color: var(–green); }
+.mission-btn.active {
+border-color: var(–green-dim);
+color: var(–green);
+background: var(–green-faint);
+}
+
+.mission-btn.completed { color: var(–green-dim); }
+
+/* Game main panel */
+.game-main { display: flex; flex-direction: column; }
+
+/* Mission briefing panel */
+.game-brief {
+padding: 1.2rem 1.5rem;
+border-bottom: 1px solid var(–border);
+background: rgba(0,15,0,0.5);
+}
+
+.brief-title {
+font-family: ‘VT323’, monospace;
+font-size: 1.4rem;
+color: var(–green);
+text-shadow: var(–glow-sm);
+margin-bottom: 0.3rem;
+}
+
+.brief-scenario {
+font-size: 0.8rem;
+color: var(–white);
+opacity: 0.8;
+line-height: 1.6;
+margin-bottom: 0.7rem;
+}
+
+.brief-concept {
+font-size: 0.75rem;
+color: var(–green-dim);
+background: rgba(0,255,65,0.04);
+border: 1px solid var(–border);
+padding: 0.6em 0.9em;
+line-height: 1.5;
+}
+
+.brief-concept strong { color: var(–green); }
+
+/* Terminal output area */
+.game-terminal {
+flex: 1;
+padding: 1rem 1.5rem;
+font-size: 0.82rem;
+color: var(–green);
+min-height: 200px;
+overflow-y: auto;
+background: var(–black);
+}
+
+.term-line {
+margin-bottom: 0.3rem;
+line-height: 1.5;
+opacity: 0;
+animation: termIn 0.05s ease forwards;
+}
+
+@keyframes termIn { to { opacity: 1; } }
+
+.term-line.prompt { color: var(–green); }
+.term-line.output { color: var(–green-dim); }
+.term-line.success { color: var(–green2); text-shadow: var(–glow-sm); }
+.term-line.error   { color: var(–red); }
+.term-line.info    { color: var(–amber); }
+.term-line.system  { color: var(–muted); font-style: italic; }
+
+/* Challenge area */
+.game-challenge {
+border-top: 1px solid var(–border);
+padding: 1.2rem 1.5rem;
+}
+
+.challenge-q {
+font-size: 0.85rem;
+color: var(–amber);
+margin-bottom: 0.8rem;
+line-height: 1.5;
+}
+
+.challenge-q::before { content: ’[?] ’; color: var(–amber); }
+
+.challenge-opts {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 0.5rem;
+margin-bottom: 0.8rem;
+}
+
+@media(max-width:540px){ .challenge-opts { grid-template-columns: 1fr; } }
+
+.ch-btn {
+background: var(–surface);
+border: 1px solid var(–border);
+color: var(–white);
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 0.78rem;
+padding: 0.6em 0.9em;
+cursor: pointer;
+text-align: left;
+transition: all 0.2s;
+}
+
+.ch-btn:hover:not(:disabled) {
+border-color: var(–green-dim);
+color: var(–green);
+background: var(–green-faint);
+}
+
+.ch-btn.correct {
+border-color: var(–green);
+color: var(–green);
+background: rgba(0,255,65,0.1);
+}
+
+.ch-btn.wrong {
+border-color: var(–red);
+color: var(–red);
+background: rgba(255,34,34,0.08);
+}
+
+/* Score / XP bar */
+.game-status {
+display: flex; align-items: center; gap: 1.5rem;
+padding: 0.7rem 1.5rem;
+border-top: 1px solid var(–border);
+background: rgba(0,10,0,0.5);
+font-size: 0.75rem;
+flex-wrap: wrap;
+}
+
+.xp-label { color: var(–green-dim); }
+.xp-val { color: var(–green); }
+
+.xp-bar-wrap {
+flex: 1; min-width: 100px;
+height: 4px;
+background: var(–border);
+border-radius: 0;
+}
+
+.xp-bar-fill {
+height: 100%;
+background: var(–green);
+box-shadow: var(–glow-sm);
+transition: width 0.6s ease;
+}
+
+/* Next mission button */
+.next-mission-btn {
+display: none;
+background: var(–green-faint);
+border: 1px solid var(–green);
+color: var(–green);
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 0.78rem;
+padding: 0.55em 1.5em;
+cursor: pointer;
+letter-spacing: 0.08em;
+transition: all 0.2s;
+margin-top: 0.6rem;
+}
+.next-mission-btn:hover { box-shadow: var(–glow-sm); }
+
+/* Reveal animation for section */
+.reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.reveal.vis { opacity: 1; transform: translateY(0); }
+
+/* ============================================================
+FOOTER
+============================================================ */
+footer {
+border-top: 1px solid var(–border);
+text-align: center;
+padding: 2rem;
+font-size: 0.7rem;
+color: var(–muted);
+position: relative; z-index: 10;
+}
+
+footer span { color: var(–green-dim); }
+</style>
+
+</head>
+<body>
+
+<!-- Matrix rain canvas -->
+
+<canvas id="matrixCanvas"></canvas>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+
+<section id="hero">
+  <div class="boot-frame">
+    <div class="boot-line">> INITIALISING CYBERHEALTH TERMINAL OS v2.6...</div>
+    <div class="boot-line">> LOADING IB CS PAPER 3 MODULE: ETHICAL HACKING...</div>
+    <div class="boot-line">> CASE STUDY: CyberHealth Security × MedTechPro Hospital</div>
+    <div class="boot-line">> ESTABLISHING SECURE CHANNEL... [OK]</div>
+    <div class="boot-line">> LOADING STUDY DATABASE... 27 TERMS | 6 QUESTIONS | 15 QUIZ Qs | 5 MISSIONS</div>
+    <div class="boot-line">> STATUS: READY. IDENTITY: ETHICAL HACKER TRAINEE</div>
+
+```
+<div class="hero-title">ETHICAL HACKING</div>
+<div class="hero-sub">IB Computer Science HL · Paper 3 · May 2026</div>
+
+<div class="hero-pills">
+  <div class="pill">CASE STUDY <span>MTPH × CYBERHEALTH</span></div>
+  <div class="pill">FRAMEWORK <span>7-PHASE PTES</span></div>
+  <div class="pill">STATUS <span>AUTHORISED</span></div>
+</div>
+
+<div class="scroll-hint">▼ &nbsp; SCROLL TO BEGIN TRAINING</div>
+```
+
+  </div>
+</section>
+
+<!-- ============================================================
+     STICKY NAV
+     ============================================================ -->
+
+<nav>
+  <a href="#overview">Overview</a>
+  <a href="#ptes">PTES Phases</a>
+  <a href="#attacks">Attacks</a>
+  <a href="#glossary">Glossary</a>
+  <a href="#ethics">Ethics</a>
+  <a href="#practice">Practice Qs</a>
+  <a href="#quiz-sec">Quiz</a>
+  <a href="#game-section">🎮 GAME</a>
+  <a href="#tips">Exam Tips</a>
+</nav>
+
+<main>
+
+<!-- ============================================================
+     01 OVERVIEW
+     ============================================================ -->
+
+<section id="overview" class="reveal">
+  <div class="sec-header">
+    <div>
+      <div class="sec-prompt">cat overview.txt</div>
+      <div class="sec-title">CASE STUDY OVERVIEW</div>
+    </div>
+  </div>
+
+  <div class="hl-box">
+    <strong>📋 THE SCENARIO</strong>
+    CyberHealth Security has been hired to conduct a full penetration test on MedTechPro Hospital (MTPH). The hospital runs Electronic Health Records (EHRs), internal communications networks, and IoT-connected medical devices. CyberHealth must uncover vulnerabilities while maintaining strict ethical and operational standards — because any disruption could endanger patients.
+  </div>
+
+  <div class="card-grid" style="margin-top:1.5rem;">
+    <div class="card">
+      <div class="card-tag">HIGH VALUE TARGET</div>
+      <h3>Why Attack MTPH?</h3>
+      <p>Hospitals store rich EHR data (medical, financial, personal) worth thousands per record on the dark web. 24/7 uptime requirements mean any disruption could cost lives, making ransom payments very likely.</p>
+    </div>
+    <div class="card">
+      <div class="card-tag">DEFINE THIS</div>
+      <h3>What Is a Pen Test?</h3>
+      <p>A simulated cyberattack authorised in writing by an organisation to proactively find exploitable vulnerabilities. Without written authorisation, it is simply illegal hacking — the intent does NOT matter legally.</p>
+    </div>
+    <div class="card">
+      <div class="card-tag">ETHICS FOCUS</div>
+      <h3>The Ethical Tension</h3>
+      <p>CyberHealth must test live hospital systems without endangering patients or exposing private data. This creates a fundamental tension: the more thorough the test, the greater the risk to patients and data.</p>
+    </div>
+    <div class="card">
+      <div class="card-tag">CONTEXT</div>
+      <h3>MTPH Technology</h3>
+      <p>The hospital uses EHR databases, internal LANs, IoT medical devices (infusion pumps, cardiac monitors), staff/patient web portals, and email systems — all of which are potential attack surfaces.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     02 PTES
+     ============================================================ -->
+
+<section id="ptes" class="reveal">
+  <div class="sec-header">
+    <div>
+      <div class="sec-prompt">cat ptes_framework.md</div>
+      <div class="sec-title">THE 7 PTES PHASES</div>
+    </div>
+  </div>
+
+  <p style="font-size:0.85rem;color:var(--white);opacity:0.8;margin-bottom:1.5rem;line-height:1.7;">The Penetration Testing Execution Standard (PTES) is the structured methodology CyberHealth follows. Click each phase to expand detailed notes with MTPH-specific examples.</p>
+
+  <div class="ptes-wrap" id="ptesWrap">
+    <!-- Populated by JS -->
+  </div>
+</section>
+
+<!-- ============================================================
+     03 ATTACKS
+     ============================================================ -->
+
+<section id="attacks" class="reveal">
+  <div class="sec-header">
+    <div>
+      <div class="sec-prompt">./explain_attacks.sh</div>
+      <div class="sec-title">ATTACK TYPES & TECHNIQUES</div>
+    </div>
+  </div>
+
+  <!-- Animated attack diagrams -->
+
+  <div class="attack-vis">
+    <div class="vis-title">[ATTACK DEMO] SQL Injection at MTPH Patient Portal</div>
+    <div class="vis-flow">
+      <div class="vis-node">Attacker</div>
+      <span class="vis-arrow">──▶</span>
+      <div class="vis-node">Login Form<br><small style="color:var(--amber)">' OR '1'='1</small></div>
+      <span class="vis-arrow">──▶</span>
+      <div class="vis-node danger">Query Hijacked</div>
+      <span class="vis-arrow">──▶</span>
+      <div class="vis-node danger">EHR Database<br><small>ALL RECORDS EXPOSED</small></div>
+    </div>
+    <div class="vis-desc">The injected SQL breaks the intended WHERE clause, causing the database to return all patient records without valid credentials.</div>
+  </div>
+
+  <div class="attack-vis">
+    <div class="vis-title">[ATTACK DEMO] Social Engineering (Vishing) at MTPH</div>
+    <div class="vis-flow">
+      <div class="vis-node">Attacker<br><small style="color:var(--amber)">poses as IT support</small></div>
+      <span class="vis-arrow">──▶</span>
+      <div class="vis-node">Phone Call<br><small style="color:var(--amber)">to nurse station</small></div>
+      <span class="vis-arrow">──▶</span>
+      <div class="vis-node danger">Nurse Discloses<br><small>VPN credentials</small></div>
+      <span class="vis-arrow">──▶</span>
+      <div class="vis-node danger">Internal Network<br><small>ACCESS GRANTED</small></div>
+    </div>
+    <div class="vis-desc">Vishing exploits trust and urgency — the attacker impersonates a trusted authority and creates a fabricated scenario to extract credentials without any technical exploit.</div>
+  </div>
+
+  <div class="card-grid" style="margin-top:1.5rem;">
+    <div class="card">
+      <div class="card-tag">SQL INJECTION</div>
+      <h3>SQLi</h3>
+      <p>Malicious SQL inserted into web form inputs to manipulate database queries. Can expose, modify, or delete the entire MTPH patient database. Mitigated by prepared statements and input validation.</p>
+    </div>
+    <div class="card">
+      <div class="card-tag">XSS</div>
+      <h3>Cross-Site Scripting</h3>
+      <p>Injecting malicious JavaScript into a web page that runs in another user's browser. At MTPH, a stored XSS attack could steal nurse session tokens, allowing impersonation of medical staff.</p>
+    </div>
+    <div class="card">
+      <div class="card-tag">MEMORY EXPLOIT</div>
+      <h3>Buffer Overflow</h3>
+      <p>Writing beyond a memory buffer's capacity, overwriting adjacent memory to allow arbitrary code execution. Legacy EHR systems at MTPH are particularly vulnerable to this class of attack.</p>
+    </div>
+    <div class="card">
+      <div class="card-tag">HUMAN FACTOR</div>
+      <h3>Social Engineering</h3>
+      <p>Exploiting human psychology rather than technical flaws. Phishing (deceptive emails), vishing (phone calls), and pretexting (fabricated scenarios) can bypass even the most sophisticated technical defences.</p>
+    </div>
+    <div class="card">
+      <div class="card-tag">MALWARE TYPES</div>
+      <h3>Malware</h3>
+      <p>Ransomware encrypts files and demands payment — hospitals are prime targets. Spyware silently exfiltrates data. Trojans disguise as legitimate software. Rootkits hide at OS level. Know all four for the exam.</p>
+    </div>
+    <div class="card">
+      <div class="card-tag">RECON TOOL</div>
+      <h3>Port Scanning & OSINT</h3>
+      <p>Nmap scans reveal all open ports, running services, and device topology. OSINT (LinkedIn, job ads, WHOIS, Google dorking) reveals staff names, tech stack, and exposed files — all from public sources only.</p>
+    </div>
+    <div class="card">
+      <div class="card-tag">TEST TYPES</div>
+      <h3>Black / White / Grey Box</h3>
+      <p>Black box: no prior knowledge (simulates real attacker). White box: full system access (most thorough). Grey box: partial info — what CyberHealth uses at MTPH, balancing realism with efficiency.</p>
+    </div>
+    <div class="card">
+      <div class="card-tag">FORENSICS</div>
+      <h3>System Forensics</h3>
+      <p>Post-incident digital analysis to understand exactly what happened, what data was accessed, and how. Used both after real breaches and after penetration tests to document the evidence trail.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     04 GLOSSARY
+     ============================================================ -->
+
+<section id="glossary" class="reveal">
+  <div class="sec-header">
+    <div>
+      <div class="sec-prompt">grep -i "" /usr/share/wordlist/ib_cs.txt</div>
+      <div class="sec-title">TERM GLOSSARY</div>
+    </div>
+  </div>
+
+  <input type="text" class="glos-search" id="glosInput" placeholder="> type to search terms..." oninput="filterGlos(this.value)">
+  <div class="glos-grid" id="glosGrid"></div>
+</section>
+
+<!-- ============================================================
+     05 ETHICS
+     ============================================================ -->
+
+<section id="ethics" class="reveal">
+  <div class="sec-header">
+    <div>
+      <div class="sec-prompt">cat ethics_protocol.conf</div>
+      <div class="sec-title">ETHICS & PROFESSIONAL STANDARDS</div>
+    </div>
+  </div>
+
+  <div class="warn-box">
+    <strong>⚠️ EXAM ALERT — HIGH PROBABILITY</strong>
+    The 12-mark discussion question almost always targets ethics. You MUST present both sides: why ethical constraints limit testing thoroughness AND why they are non-negotiable in a healthcare context. A one-sided answer cannot score above 6/12.
+  </div>
+
+  <div class="ethics-grid" style="margin-top:1.5rem;">
+    <div class="eth-card">
+      <h4>Authorisation & RoE</h4>
+      <p>Every action requires a signed Rules of Engagement document. Testing outside agreed scope is illegal regardless of intent. No written authorisation = criminal hacking.</p>
+    </div>
+    <div class="eth-card">
+      <h4>Patient Data Confidentiality</h4>
+      <p>Real EHR data must never be extracted or retained. Anonymised synthetic test data must be used. GDPR-equivalent regulations apply — violations carry heavy legal penalties.</p>
+    </div>
+    <div class="eth-card amber">
+      <h4>Non-Disruption of Care</h4>
+      <p>Testing must never interrupt life-critical systems. Automated scanning must not target ICU monitors or infusion pumps. Manual testing only for patient-critical IoT devices.</p>
+    </div>
+    <div class="eth-card">
+      <h4>Responsible Disclosure</h4>
+      <p>Vulnerabilities are reported only to MTPH. Public disclosure before fixes are applied would be deeply irresponsible. The report itself must be stored and transmitted securely.</p>
+    </div>
+    <div class="eth-card amber">
+      <h4>Minimising Footprint</h4>
+      <p>Only access what is needed to prove the vulnerability. Going beyond the minimum to prove a point — even within scope — is unethical and potentially grounds for legal action.</p>
+    </div>
+    <div class="eth-card red">
+      <h4>Consequences of Breach</h4>
+      <p>Criminal prosecution, civil liability, regulatory fines, reputational destruction, and — most critically — direct patient harm if systems are disrupted during testing.</p>
+    </div>
+  </div>
+
+  <div class="hl-box" style="margin-top:1.5rem;">
+    <strong>💡 12-MARK ESSAY STRUCTURE (4 distinct argument blocks)</strong>
+    Block 1: Patient safety makes constraints non-negotiable (IoT device risk). Block 2: Legal compliance protects both parties (RoE, computer misuse law). Block 3: Data protection laws constrain data exfiltration. Block 4 (counterargument): Constraints reduce thoroughness — grey/black box misses vulnerabilities white box would find. Conclusion: Constraints are necessary; false assurance from unconstrained testing is more dangerous than the gap in coverage.
+  </div>
+</section>
+
+<!-- ============================================================
+     06 PRACTICE QUESTIONS
+     ============================================================ -->
+
+<section id="practice" class="reveal">
+  <div class="sec-header">
+    <div>
+      <div class="sec-prompt">./run_practice_exam.sh</div>
+      <div class="sec-title">PRACTICE QUESTIONS</div>
+    </div>
+  </div>
+
+  <p style="font-size:0.85rem;color:var(--white);opacity:0.8;margin-bottom:1.5rem;">Try answering each question before clicking to reveal the mark scheme. Write your answer on paper first — that's how real exam practice works.</p>
+
+  <div class="q-list" id="qList"></div>
+</section>
+
+<!-- ============================================================
+     07 QUIZ
+     ============================================================ -->
+
+<section id="quiz-sec" class="reveal">
+  <div class="sec-header">
+    <div>
+      <div class="sec-prompt">./knowledge_test --mode=mcq --count=15</div>
+      <div class="sec-title">KNOWLEDGE QUIZ</div>
+    </div>
+  </div>
+
+  <div class="quiz-shell">
+    <div class="quiz-shell-header">
+      <div class="quiz-bar-wrap"><div class="quiz-bar-fill" id="qzFill" style="width:0%"></div></div>
+      <span class="quiz-stat">Q <span id="qzCount">0</span> / 15</span>
+      <span class="quiz-stat">SCORE: <span id="qzScore">0</span></span>
+    </div>
+    <div id="qzBox"></div>
+    <div class="quiz-fb" id="qzFb"></div>
+    <button class="quiz-next" id="qzNext" onclick="qzNext()">NEXT_QUESTION.EXE ▶</button>
+    <div class="quiz-result" id="qzResult">
+      <span class="result-num" id="qzResultNum"></span>
+      <p class="result-txt" id="qzResultTxt"></p>
+      <button class="quiz-restart" onclick="qzStart()">↩ RESTART_QUIZ.EXE</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     🎮 HACKER TERMINAL GAME
+     ============================================================ -->
+
+<section id="game-section" class="reveal">
+  <div class="sec-header">
+    <div>
+      <div class="sec-prompt">./launch_simulation.sh --mode=interactive</div>
+      <div class="sec-title">🎮 OPERATION: CYBERHEALTH</div>
+    </div>
+  </div>
+
+  <p style="font-size:0.85rem;color:var(--white);opacity:0.8;margin-bottom:1.5rem;line-height:1.7;">You are a junior pen tester at CyberHealth Security. Work through 5 missions by answering challenges to simulate each phase of the MTPH penetration test. Each correct answer earns XP and advances you to the next phase. Every question teaches you a real exam concept.</p>
+
+  <div class="game-container">
+    <!-- Title bar -->
+    <div class="game-titlebar">
+      <div class="game-titlebar-text">CYBERHEALTH TERMINAL — MTPH PENTEST SIMULATION</div>
+      <div class="game-titlebar-dots">
+        <div class="game-dot"></div>
+        <div class="game-dot"></div>
+        <div class="game-dot"></div>
+      </div>
+    </div>
+
+```
+<div class="game-layout">
+  <!-- Sidebar: mission list -->
+  <div class="game-sidebar">
+    <div class="sidebar-header">// MISSIONS</div>
+    <div id="missionList"></div>
+    <div style="margin-top:auto;padding-top:1rem;font-size:0.7rem;color:var(--muted);">
+      <div>XP: <span id="sideXp" style="color:var(--green)">0</span> / 500</div>
+      <div style="margin-top:0.3rem;">RANK: <span id="sideRank" style="color:var(--green)">TRAINEE</span></div>
+    </div>
+  </div>
+
+  <!-- Main game panel -->
+  <div class="game-main">
+    <!-- Brief -->
+    <div class="game-brief" id="gameBrief">
+      <div class="brief-title" id="briefTitle">AWAITING MISSION...</div>
+      <div class="brief-scenario" id="briefScenario">Select a mission from the sidebar to begin your penetration test.</div>
+      <div class="brief-concept" id="briefConcept"></div>
+    </div>
+
+    <!-- Terminal output -->
+    <div class="game-terminal" id="gameTerm">
+      <div class="term-line system">> CYBERHEALTH SECURE TERMINAL READY</div>
+      <div class="term-line system">> SELECT A MISSION TO BEGIN OPERATION</div>
+      <div class="term-line system">> REMEMBER: ALL ACTIONS ARE AUTHORISED</div>
+    </div>
+
+    <!-- Challenge -->
+    <div class="game-challenge" id="gameChallenge">
+      <div class="challenge-q" id="chalQ" style="display:none;"></div>
+      <div class="challenge-opts" id="chalOpts" style="display:none;"></div>
+      <button class="next-mission-btn" id="nextMissionBtn" onclick="gameNextMission()">PROCEED TO NEXT PHASE ▶</button>
+    </div>
+
+    <!-- Status bar -->
+    <div class="game-status">
+      <span class="xp-label">XP</span>
+      <div class="xp-bar-wrap"><div class="xp-bar-fill" id="xpFill" style="width:0%"></div></div>
+      <span class="xp-val" id="xpVal">0 / 500</span>
+      <span class="xp-label">MISSION: <span id="missionStatus" style="color:var(--amber)">STANDBY</span></span>
+    </div>
+  </div>
+</div>
+```
+
+  </div>
+</section>
+
+<!-- ============================================================
+     08 EXAM TIPS
+     ============================================================ -->
+
+<section id="tips" class="reveal">
+  <div class="sec-header">
+    <div>
+      <div class="sec-prompt">cat exam_strategy.txt</div>
+      <div class="sec-title">EXAM STRATEGY</div>
+    </div>
+  </div>
+
+  <div class="tips-list">
+    <div class="tip-row">
+      <span class="tip-ico">🎯</span>
+      <div class="tip-body">
+        <h4>ANCHOR EVERY ANSWER TO MTPH</h4>
+        <p>Never give a generic cybersecurity answer. Examiners award marks for contextualised application. Every response should name the hospital, EHRs, IoT medical devices, patient safety, or the CyberHealth team.</p>
+      </div>
+    </div>
+    <div class="tip-row">
+      <span class="tip-ico">📊</span>
+      <div class="tip-body">
+        <h4>MASTER THE COMMAND TERMS</h4>
+        <p>"Identify" = 1 point, no explanation. "Define" = precise technical definition. "Explain" = mechanism + why/how it works. "Describe" = step-by-step walkthrough. "Discuss/Evaluate" = both sides + conclusion required for 8–12 mark questions.</p>
+      </div>
+    </div>
+    <div class="tip-row">
+      <span class="tip-ico">⚡</span>
+      <div class="tip-body">
+        <h4>STRUCTURE YOUR 12-MARK ESSAY</h4>
+        <p>Write at least 4 distinct developed points covering: technical ethics, patient safety, legal implications, and the trade-off between thoroughness and harm avoidance. End with a clear, balanced conclusion. Without a conclusion you cannot reach the top mark band.</p>
+      </div>
+    </div>
+    <div class="tip-row">
+      <span class="tip-ico">🔧</span>
+      <div class="tip-body">
+        <h4>KNOW BLACK / WHITE / GREY BOX COLD</h4>
+        <p>This distinction appears every year. Black = no info (external hacker simulation). White = full access (most thorough). Grey = partial info (CyberHealth's approach at MTPH). Know advantages and disadvantages of each in a hospital context.</p>
+      </div>
+    </div>
+    <div class="tip-row">
+      <span class="tip-ico">📖</span>
+      <div class="tip-body">
+        <h4>ANNOTATE YOUR CASE STUDY COPY</h4>
+        <p>You receive the case study booklet in the exam. Your pre-exam copy should be covered in annotations: PTES phase labels in margins, key terms underlined, ethical issues highlighted. Strong answers cite specific lines from the case study document.</p>
+      </div>
+    </div>
+    <div class="tip-row">
+      <span class="tip-ico">⏱️</span>
+      <div class="tip-body">
+        <h4>TIME MANAGEMENT</h4>
+        <p>Paper 3 is 1 hour. With ~30 marks total, allocate roughly 2 minutes per mark. Spend proportionally more time on the 12-mark essay question. Never overwrite "identify" questions — one clear point per mark is sufficient and wastes less time.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  IB CS 2026 · <span>ETHICAL HACKING — PAPER 3</span> · CyberHealth × MedTechPro Hospital · For educational use only
+</footer>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+
+<script>
+/* ──────────────────────────────────────────────
+   MATRIX RAIN
+   ────────────────────────────────────────────── */
+(function() {
+  const canvas = document.getElementById('matrixCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, cols, drops;
+
+  function init() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    const fontSize = 13;
+    cols = Math.floor(W / fontSize);
+    drops = Array(cols).fill(1);
+    ctx.font = fontSize + 'px Share Tech Mono';
+  }
+
+  const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノABCDEF><{}[]|/\\';
+
+  function draw() {
+    ctx.fillStyle = 'rgba(0,0,0,0.05)';
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#00ff41';
+    for (let i = 0; i < drops.length; i++) {
+      const char = chars[Math.floor(Math.random() * chars.length)];
+      ctx.fillText(char, i * 13, drops[i] * 13);
+      if (drops[i] * 13 > H && Math.random() > 0.975) drops[i] = 0;
+      drops[i]++;
+    }
+  }
+
+  init();
+  window.addEventListener('resize', init);
+  setInterval(draw, 50);
+})();
+
+/* ──────────────────────────────────────────────
+   SCROLL REVEAL
+   ────────────────────────────────────────────── */
+const revObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('vis'); revObs.unobserve(e.target); } });
+}, { threshold: 0.06 });
+document.querySelectorAll('.reveal').forEach(el => revObs.observe(el));
+
+/* ──────────────────────────────────────────────
+   PTES PHASES DATA + RENDER
+   ────────────────────────────────────────────── */
+const phasesData = [
+  {
+    id: 'PHASE 01', name: 'Pre-Engagement Interactions',
+    content: `<p>Before a single scan is run, CyberHealth must obtain <strong>formal written authorisation</strong> from MTPH. This is not optional — without it, every subsequent action is criminal hacking regardless of the tester's good intentions.</p>
+    <ul>
+      <li>Define exact scope: which systems, IPs, devices are in/out of scope</li>
+      <li>Sign Rules of Engagement (RoE) document with MTPH management</li>
+      <li>Agree on testing windows — no testing during peak clinical hours (e.g. 07:00–19:00)</li>
+      <li>Establish emergency contacts and rollback procedures if something goes wrong</li>
+      <li>Define what constitutes "proof" without extracting real patient data</li>
+    </ul>`
+  },
+  {
+    id: 'PHASE 02', name: 'Intelligence Gathering (OSINT)',
+    content: `<p>The team collects all publicly available information about MTPH without touching any of their systems. This is <strong>OSINT (Open Source Intelligence)</strong> — entirely legal and often surprisingly revealing.</p>
+    <ul>
+      <li><strong>LinkedIn:</strong> staff names, job titles, IT admin roles — enables targeted phishing</li>
+      <li><strong>Job ads:</strong> "Experience with Epic EHR v12 required" reveals exact software versions</li>
+      <li><strong>Search engine dorking:</strong> site:mtph.org filetype:pdf may expose internal documents</li>
+      <li><strong>WHOIS / DNS:</strong> IP ranges, subdomains, hosting providers, mail servers</li>
+      <li><strong>Port scanning with Nmap:</strong> discovers open ports, services, and OS versions</li>
+    </ul>`
+  },
+  {
+    id: 'PHASE 03', name: 'Threat Modelling',
+    content: `<p>Using the gathered intelligence, the team identifies the most likely threat actors and prioritises their testing accordingly. Not all systems carry equal risk.</p>
+    <ul>
+      <li>Identify adversary archetypes: ransomware groups, data brokers, disgruntled insiders</li>
+      <li>Map high-value assets: EHR database, admin portal, IoT devices, VPN gateway</li>
+      <li>Prioritise systems where a breach would cause the most harm (ICU systems = highest priority)</li>
+      <li>Build a risk matrix: likelihood × impact for each identified threat</li>
+      <li>Document assumptions about attacker capabilities and access level</li>
+    </ul>`
+  },
+  {
+    id: 'PHASE 04', name: 'Vulnerability Analysis',
+    content: `<p>The team actively probes MTPH systems for exploitable weaknesses using a combination of automated tools and careful manual techniques.</p>
+    <ul>
+      <li><strong>Automated scanners</strong> (Nessus, OpenVAS): compare services against CVE databases for known vulnerabilities</li>
+      <li><strong>Web app scanning:</strong> test patient/staff portals for SQL injection and XSS input fields</li>
+      <li><strong>Manual code review:</strong> custom EHR modules may have flaws automated tools miss</li>
+      <li><strong>IoT firmware checks:</strong> verify medical device firmware is up-to-date; manual review only</li>
+      <li>All findings catalogued with severity ratings: Critical / High / Medium / Low</li>
+    </ul>`
+  },
+  {
+    id: 'PHASE 05', name: 'Exploitation',
+    content: `<p>The team attempts to exploit confirmed vulnerabilities to demonstrate their real-world impact. All actions are strictly controlled — the goal is proof-of-concept, not actual harm.</p>
+    <ul>
+      <li>SQL injection on the patient portal — demonstrate access to test records only</li>
+      <li>Phishing email to staff — see who clicks; document credentials disclosed</li>
+      <li>Exploit IoT device default credentials — demonstrate login is possible, then stop</li>
+      <li>Use discovered VPN credentials from vishing to connect to internal network</li>
+      <li><strong>Hard stop rule:</strong> never modify, delete, or exfiltrate real patient data under any circumstances</li>
+    </ul>`
+  },
+  {
+    id: 'PHASE 06', name: 'Post-Exploitation',
+    content: `<p>Once access is gained, the team assesses what a real attacker could do — how deeply they could penetrate, what data they could reach, and whether they could establish persistence.</p>
+    <ul>
+      <li><strong>Lateral movement:</strong> can a breach in the HR portal reach the EHR database?</li>
+      <li><strong>Privilege escalation:</strong> can a standard nurse login be elevated to admin access?</li>
+      <li><strong>Persistence simulation:</strong> could an attacker maintain access without detection?</li>
+      <li>All findings rigorously documented — screenshots, timestamps, access paths</li>
+      <li>No real data extracted; synthetic/anonymised data used for all demonstrations</li>
+    </ul>`
+  },
+  {
+    id: 'PHASE 07', name: 'Reporting',
+    content: `<p>The final phase delivers a professional, structured report to MTPH. This is the primary deliverable — the tangible output that justifies the entire engagement.</p>
+    <ul>
+      <li><strong>Executive summary:</strong> non-technical overview for hospital management</li>
+      <li><strong>Technical findings:</strong> each vulnerability with severity rating, evidence, and reproduction steps</li>
+      <li><strong>Remediation recommendations:</strong> specific, actionable steps to fix each issue</li>
+      <li><strong>Risk assessment:</strong> quantified business impact of each unpatched vulnerability</li>
+      <li><strong>Secure delivery:</strong> report encrypted and transmitted through agreed secure channels only</li>
+    </ul>`
+  }
+];
+
+(function renderPTES() {
+  const wrap = document.getElementById('ptesWrap');
+  wrap.innerHTML = phasesData.map((p, i) => `
+    <div class="phase-item" id="phase${i}">
+      <div class="phase-head" onclick="togglePhase(${i})">
+        <span class="phase-id">${p.id}</span>
+        <span class="phase-name">${p.name}</span>
+        <span class="phase-chevron">▶</span>
+      </div>
+      <div class="phase-body">
+        <div class="phase-content">${p.content}</div>
+      </div>
+    </div>
+  `).join('');
+})();
+
+function togglePhase(i) {
+  document.getElementById('phase' + i).classList.toggle('open');
+}
+
+/* ──────────────────────────────────────────────
+   GLOSSARY DATA + RENDER
+   ────────────────────────────────────────────── */
+const glosData = [
+  { t: 'Penetration Testing', d: 'An authorised simulated cyberattack on a system to identify exploitable vulnerabilities before real attackers do. Requires written consent (RoE).' },
+  { t: 'PTES', d: 'Penetration Testing Execution Standard — a 7-phase framework: pre-engagement, intelligence gathering, threat modelling, vulnerability analysis, exploitation, post-exploitation, reporting.' },
+  { t: 'OSINT', d: 'Open Source Intelligence — collecting data from publicly available sources (social media, DNS, search engines, job ads) without accessing private systems.' },
+  { t: 'SQL Injection (SQLi)', d: 'Inserting malicious SQL into a web form to manipulate database queries, potentially exposing, modifying, or deleting all records in the EHR database.' },
+  { t: 'Cross-Site Scripting (XSS)', d: 'Injecting malicious JavaScript into a web page so it executes in other users\' browsers, enabling session token theft and account takeover.' },
+  { t: 'Buffer Overflow', d: 'Writing beyond a memory buffer\'s capacity, overwriting adjacent memory. Can allow arbitrary code execution. Common in legacy EHR software.' },
+  { t: 'Social Engineering', d: 'Exploiting human psychology rather than technical flaws to gain access or information. Includes phishing, vishing, and pretexting.' },
+  { t: 'Phishing', d: 'Deceptive emails that impersonate a trusted entity to trick recipients into clicking malicious links or disclosing credentials.' },
+  { t: 'Vishing', d: 'Voice phishing — phone calls where attackers impersonate IT support, management, or vendors to extract sensitive information verbally.' },
+  { t: 'Malware', d: 'Malicious software designed to disrupt, damage, or gain unauthorised access. Types: ransomware, spyware, trojans, viruses, worms, rootkits.' },
+  { t: 'Ransomware', d: 'Encrypts victim files and demands payment for the decryption key. Hospitals are prime targets due to critical need for data access and patient safety pressure.' },
+  { t: 'Black Box Testing', d: 'Pen test with no prior system knowledge — simulates an external attacker with zero insider information. Most realistic, least thorough.' },
+  { t: 'White Box Testing', d: 'Pen test with full system knowledge (source code, architecture). Most thorough, least realistic. Finds the most vulnerabilities.' },
+  { t: 'Grey Box Testing', d: 'Pen test with partial system knowledge. Balances realism with efficiency. The approach CyberHealth uses at MTPH.' },
+  { t: 'EHR', d: 'Electronic Health Record — digital patient history including diagnoses, medications, treatments. Extremely high-value data target worth thousands per record.' },
+  { t: 'IoT Medical Device', d: 'Internet-connected medical equipment (infusion pumps, heart monitors, ventilators). Often runs legacy firmware with poor security controls.' },
+  { t: 'Port Scanning', d: 'Systematically probing ports to discover running services and potential entry points. Nmap is the primary tool used in Phase 2.' },
+  { t: 'Network Mapping', d: 'Creating a diagram of all network devices, connections, and topology. Reveals the full attack surface and potential lateral movement paths.' },
+  { t: 'Vulnerability Analysis', d: 'Identifying, classifying, and prioritising security weaknesses using automated scanners (Nessus) and manual expert review.' },
+  { t: 'Privilege Escalation', d: 'Gaining higher system access than originally authorised — e.g. moving from standard user to administrator role.' },
+  { t: 'Lateral Movement', d: 'Moving through a network from one compromised system to access others. A breach of the HR portal enabling EHR database access is a classic example.' },
+  { t: 'Rules of Engagement (RoE)', d: 'A formal signed document defining scope, permitted techniques, timing, and legal boundaries before any testing begins. Non-negotiable.' },
+  { t: 'Search Engine Dorking', d: 'Using advanced search operators (site:, filetype:, inurl:) to find sensitive information accidentally exposed on public-facing websites.' },
+  { t: 'System Forensics', d: 'Post-incident digital analysis to understand exactly what happened, what data was accessed, and how the attacker moved through the system.' },
+  { t: 'Threat Modelling', d: 'Identifying potential attackers, their motivations, and their likely techniques to prioritise which systems require the most rigorous testing.' },
+  { t: 'CVE', d: 'Common Vulnerabilities and Exposures — a public database of known cybersecurity flaws. Automated scanners compare running services against CVE databases.' },
+  { t: 'Zero-Day Vulnerability', d: 'A software flaw unknown to the vendor with no available patch. Extremely dangerous as no defence exists at the time of exploitation.' },
+];
+
+function renderGlos(filter) {
+  const terms = filter
+    ? glosData.filter(g => g.t.toLowerCase().includes(filter.toLowerCase()) || g.d.toLowerCase().includes(filter.toLowerCase()))
+    : glosData;
+  document.getElementById('glosGrid').innerHTML = terms.map(g => `
+    <div class="glos-card">
+      <div class="glos-term">${g.t}</div>
+      <div class="glos-def">${g.d}</div>
+    </div>
+  `).join('');
+}
+
+function filterGlos(v) { renderGlos(v); }
+renderGlos('');
+
+/* ──────────────────────────────────────────────
+   PRACTICE QUESTIONS
+   ────────────────────────────────────────────── */
+const practiceQs = [
+  {
+    marks: '2 marks',
+    q: '1(a) Identify two reasons why MedTechPro Hospital is a high-value target for cyberattacks.',
+    ans: [
+      'Award 1 mark each for any two of:',
+      'EHRs contain rich personal, medical, and insurance data — each record is worth thousands on the dark web. [1]',
+      'Hospitals require 24/7 uptime — any disruption is potentially life-threatening, making ransom payments more likely. [1]',
+      'IoT medical devices often run outdated firmware with known unpatched vulnerabilities. [1]',
+      'Large number of employees with varying cybersecurity awareness creates a broad social engineering attack surface. [1]',
+    ]
+  },
+  {
+    marks: '2 marks',
+    q: '1(b) Define penetration testing in the context of cybersecurity.',
+    ans: [
+      'Award [2 marks] — must include BOTH elements for full marks:',
+      'A simulated cyberattack [1] carried out with formal written authorisation from the target organisation [1] to proactively identify exploitable vulnerabilities.',
+      'Note: stating only "simulated" OR only "authorised" scores [1]. Both together = [2].',
+    ]
+  },
+  {
+    marks: '4 marks',
+    q: '2(a) Explain how OSINT assists CyberHealth during the intelligence gathering phase of the MTPH penetration test.',
+    ans: [
+      'Award 1 mark per developed point, up to [4 marks]:',
+      'Staff LinkedIn profiles reveal IT admin names and roles, enabling crafted spear-phishing emails targeting specific employees. [1]',
+      'Job postings referencing "Epic EHR v12" reveal exact software versions, allowing the team to look up known CVEs for that version. [1]',
+      'Search engine dorking (e.g. site:mtph.org filetype:pdf) may uncover accidentally exposed internal documents containing network details or credentials. [1]',
+      'WHOIS/DNS lookups reveal IP address ranges, subdomains, and mail server configurations, building a complete map of the external attack surface. [1]',
+    ]
+  },
+  {
+    marks: '4 marks',
+    q: '2(b) Explain how ethical constraints affect the way CyberHealth conducts testing on MTPH\'s IoT medical devices.',
+    ans: [
+      'Award up to [4 marks]:',
+      'IoT medical devices are life-critical — automated network scanning could crash an infusion pump or cardiac monitor, directly endangering patients, so only manual inspection techniques are permitted. [1+1]',
+      'CyberHealth must not modify device settings or firmware during testing, only observe and document, because any change could alter drug dosage delivery or monitoring thresholds. [1]',
+      'Testing of devices such as ventilators must be performed on isolated test devices or equipment taken out of service, not on devices actively used for patient care. [1]',
+      'All IoT device tests must remain within the agreed scope in the RoE; accessing out-of-scope devices is illegal even if vulnerabilities are discovered. [1]',
+    ]
+  },
+  {
+    marks: '6 marks',
+    q: '3. Describe the key steps CyberHealth follows during the vulnerability analysis phase at MTPH, including both automated and manual approaches.',
+    ans: [
+      'Award 1 mark per developed point, up to [6 marks]:',
+      'Automated vulnerability scanners such as Nessus/OpenVAS scan all in-scope IP addresses and compare running services against the CVE database for known flaws. [1]',
+      'Nmap port scanning identifies all open ports and services on MTPH\'s network, narrowing the scope for deeper manual investigation. [1]',
+      'Web application scanning tests the patient/staff portals specifically for SQLi and XSS input vectors that could expose or manipulate EHR data. [1]',
+      'Manual code review is applied to custom EHR modules where automated tools may generate false negatives or miss logic flaws. [1]',
+      'Manual-only techniques are applied to IoT medical devices to avoid the risk of automated scanning disrupting critical patient care equipment. [1]',
+      'All findings are recorded with severity ratings (Critical/High/Medium/Low) and detailed reproduction steps to enable the remediation team to act efficiently. [1]',
+    ]
+  },
+  {
+    marks: '12 marks',
+    q: '4. Discuss why maintaining ethical and professional standards is critical when CyberHealth Security conducts penetration testing at MedTechPro Hospital.',
+    ans: [
+      'Level of Response — top band (9–12) requires multiple developed arguments from different dimensions plus a balanced conclusion:',
+      'PATIENT SAFETY: MTPH hosts life-critical systems. Disrupting ICU monitors or infusion pumps during testing could directly harm or kill patients. This elevates ethical constraints from professional best practice to a moral and legal imperative. Manual-only testing for such devices is non-negotiable. [2]',
+      'LEGAL COMPLIANCE: Computer misuse legislation makes unauthorised access illegal regardless of intent. RoE must be signed before testing. Accessing out-of-scope systems — even if vulnerabilities are found — constitutes criminal activity. Maintaining standards protects both parties from prosecution. [2]',
+      'DATA PROTECTION: Patient EHRs are protected by GDPR-equivalent legislation. Exfiltrating or retaining real patient data — even as evidence — is a serious regulatory breach. Synthetic anonymised data must substitute, preserving public trust in healthcare data handling. [2]',
+      'COUNTERARGUMENT — REDUCED THOROUGHNESS: Ethical constraints inevitably limit test effectiveness. Grey/black box approaches miss vulnerabilities that white box testing would expose. Restricting IoT testing may leave critical gaps. This means the test provides partial assurance only. [2]',
+      'PROFESSIONAL REPUTATION: If CyberHealth breaches ethical standards it destroys hospital trust in penetration testing services and may deter future hospitals from engaging security firms — leaving them more vulnerable to real attacks. [1]',
+      'CONCLUSION: Despite the reduction in thoroughness, ethical constraints are non-negotiable in healthcare. A marginally incomplete test that harms no one is vastly preferable to an exhaustive test that disrupts care or exposes patient data. Ethical frameworks are what distinguish penetration testing from criminal hacking. [2]',
+    ]
+  },
+];
+
+(function renderQs() {
+  document.getElementById('qList').innerHTML = practiceQs.map((q, i) => `
+    <div class="q-item" id="qi${i}">
+      <div class="q-head" onclick="toggleQ(${i})">
+        <span class="q-mark">${q.marks}</span>
+        <span class="q-text">${q.q}</span>
+        <span class="q-tog">+</span>
+      </div>
+      <div class="q-ans">
+        <div class="q-ans-inner">
+          <span class="q-ans-label">>> MARK SCHEME / MODEL ANSWER</span>
+          ${q.ans.map(a => `<p>${a}</p>`).join('')}
+        </div>
+      </div>
+    </div>
+  `).join('');
+})();
+
+function toggleQ(i) { document.getElementById('qi' + i).classList.toggle('open'); }
+
+/* ──────────────────────────────────────────────
+   QUIZ DATA + LOGIC
+   ────────────────────────────────────────────── */
+const quizData = [
+  { q: 'What does PTES stand for?', opts: ['Penetration Testing Execution Standard','Public Testing Ethics Standard','Protocol Testing Expert System','Penetration Testing Expert Suite'], ans: 0, exp: 'PTES = Penetration Testing Execution Standard. It is the 7-phase structured framework used by CyberHealth to systematically test MTPH.' },
+  { q: 'In black box penetration testing, what information is given to the tester?', opts: ['Full source code access','Partial network diagrams','No prior information','Admin login credentials'], ans: 2, exp: 'Black box testing gives no prior information, simulating a real external attacker who must discover everything themselves.' },
+  { q: 'Which PTES phase uses OSINT to gather public information about MTPH?', opts: ['Phase 5: Exploitation','Phase 1: Pre-Engagement','Phase 2: Intelligence Gathering','Phase 4: Vulnerability Analysis'], ans: 2, exp: 'Phase 2 (Intelligence Gathering) is where OSINT is collected — social media, DNS records, job ads, and search engine dorking.' },
+  { q: 'Which attack inserts malicious code into a web form to manipulate the EHR database query?', opts: ['XSS','Buffer Overflow','SQL Injection','Port Scanning'], ans: 2, exp: 'SQL Injection manipulates the database query by inserting malicious SQL, potentially exposing all MTPH patient records.' },
+  { q: 'A nurse gets a phone call from "IT support" asking for her VPN credentials. This is:', opts: ['Phishing','XSS','Vishing','Buffer Overflow'], ans: 2, exp: 'Vishing is voice-based phishing — phone calls impersonating a trusted authority to extract credentials. Email-based would be phishing.' },
+  { q: 'Why does CyberHealth use manual techniques only on ICU monitors during testing?', opts: ['Manual tools are more thorough','Automated scanners cannot detect IoT devices','Automated scanning could crash the device and endanger patients','IoT devices require special licenses to scan'], ans: 2, exp: 'Automated scanning could crash or disrupt life-critical IoT medical devices, directly endangering patients. Manual inspection eliminates this risk.' },
+  { q: 'Which malware type encrypts files and demands payment for the decryption key?', opts: ['Spyware','Rootkit','Trojan','Ransomware'], ans: 3, exp: 'Ransomware encrypts data and demands payment. Hospitals are prime targets because they need immediate access to patient records — creating pressure to pay.' },
+  { q: 'What must exist before CyberHealth begins ANY testing at MTPH?', opts: ['A full network map','A signed Rules of Engagement document','A completed vulnerability report','A list of all CVEs'], ans: 1, exp: 'A signed RoE (Rules of Engagement) must exist before any action. Without it, every test is legally equivalent to criminal hacking.' },
+  { q: 'Moving from a compromised HR portal to access the EHR database demonstrates:', opts: ['Privilege Escalation','Lateral Movement','Buffer Overflow','OSINT Gathering'], ans: 1, exp: 'Lateral movement is pivoting from one compromised system to another within the same network — a critical post-exploitation technique.' },
+  { q: 'OSINT stands for:', opts: ['Online System Intrusion Test','Open Source Intelligence','Operational Security Insights Tool','Organised Surveillance Intelligence Network'], ans: 1, exp: 'OSINT = Open Source Intelligence. It uses only publicly available data — entirely legal and no MTPH systems are accessed during this phase.' },
+  { q: 'Which testing approach is MOST thorough but LEAST realistic?', opts: ['Black box','Red team','White box','Grey box'], ans: 2, exp: 'White box testing provides full access to source code and architecture — the most thorough but least realistic, as real attackers rarely have this information.' },
+  { q: 'A stored XSS attack on MTPH\'s staff portal could most directly enable:', opts: ['Encrypting patient files for ransom','Stealing session tokens to impersonate medical staff','Overloading the hospital network','Scanning for open ports'], ans: 1, exp: 'Stored XSS injects JavaScript that runs when staff load the page — stealing their session cookies allows the attacker to fully impersonate them.' },
+  { q: 'Which PTES phase delivers the executive summary and remediation recommendations to MTPH?', opts: ['Phase 4: Vulnerability Analysis','Phase 6: Post-Exploitation','Phase 7: Reporting','Phase 3: Threat Modelling'], ans: 2, exp: 'Phase 7 (Reporting) is the final deliverable: executive summary for management, technical findings with severity ratings, evidence, and actionable remediation steps.' },
+  { q: 'Buffer overflow vulnerabilities at MTPH are most likely to be found in:', opts: ['IoT cardiac monitors','Well-maintained cloud databases','Legacy EHR software systems','Nmap scan results'], ans: 2, exp: 'Buffer overflow flaws are most common in older, legacy software. MTPH\'s older EHR systems are therefore particularly vulnerable to this class of attack.' },
+  { q: 'Search engine dorking with "site:mtph.org filetype:pdf" is an example of which technique?', opts: ['Port Scanning','Network Mapping','OSINT / Intelligence Gathering','Vulnerability Exploitation'], ans: 2, exp: 'Advanced search operators are a core OSINT technique — they can surface accidentally exposed internal documents, login pages, and configuration files without touching any MTPH system.' },
+];
+
+let qzIdx = 0, qzScore = 0, qzAnswered = false;
+
+function qzStart() {
+  qzIdx = 0; qzScore = 0; qzAnswered = false;
+  document.getElementById('qzResult').style.display = 'none';
+  document.getElementById('qzBox').style.display = '';
+  document.getElementById('qzFb').classList.remove('show');
+  document.getElementById('qzNext').style.display = 'none';
+  document.getElementById('qzScore').textContent = '0';
+  renderQzQ();
+}
+
+function renderQzQ() {
+  const d = quizData[qzIdx];
+  document.getElementById('qzFill').style.width = (qzIdx / quizData.length * 100) + '%';
+  document.getElementById('qzCount').textContent = qzIdx + 1;
+  document.getElementById('qzFb').classList.remove('show');
+  document.getElementById('qzNext').style.display = 'none';
+  qzAnswered = false;
+  document.getElementById('qzBox').innerHTML = `
+    <div class="quiz-q">> ${d.q}</div>
+    <div class="quiz-opts">
+      ${d.opts.map((o, i) => `<button class="quiz-btn" onclick="qzAnswer(${i})">[${String.fromCharCode(65+i)}] ${o}</button>`).join('')}
+    </div>
+  `;
+}
+
+function qzAnswer(chosen) {
+  if (qzAnswered) return;
+  qzAnswered = true;
+  const d = quizData[qzIdx];
+  document.querySelectorAll('.quiz-btn').forEach(b => b.disabled = true);
+  document.querySelectorAll('.quiz-btn')[d.ans].classList.add('correct');
+  if (chosen !== d.ans) document.querySelectorAll('.quiz-btn')[chosen].classList.add('wrong');
+  else { qzScore++; document.getElementById('qzScore').textContent = qzScore; }
+  const fb = document.getElementById('qzFb');
+  fb.innerHTML = (chosen === d.ans ? '✅ CORRECT — ' : '❌ INCORRECT — ') + d.exp;
+  fb.classList.add('show');
+  document.getElementById('qzNext').style.display = '';
+}
+
+function qzNext() {
+  qzIdx++;
+  if (qzIdx >= quizData.length) showQzResult();
+  else renderQzQ();
+}
+
+function showQzResult() {
+  document.getElementById('qzBox').style.display = 'none';
+  document.getElementById('qzFb').classList.remove('show');
+  document.getElementById('qzNext').style.display = 'none';
+  document.getElementById('qzFill').style.width = '100%';
+  const pct = Math.round(qzScore / quizData.length * 100);
+  document.getElementById('qzResultNum').textContent = `${qzScore} / ${quizData.length}`;
+  document.getElementById('qzResultTxt').textContent =
+    pct >= 80 ? 'EXCELLENT — ACCESS GRANTED. You\'re ready for Paper 3. 🎯'
+  : pct >= 60 ? 'PARTIAL ACCESS — Good effort. Review missed concepts and retry. 📚'
+  : 'ACCESS DENIED — Keep studying. Focus on PTES phases and attack types. 💪';
+  document.getElementById('qzResult').style.display = 'block';
+}
+
+qzStart();
+
+/* ──────────────────────────────────────────────
+   🎮 HACKER TERMINAL GAME
+   ────────────────────────────────────────────── */
+const missions = [
+  {
+    title: 'MISSION 1: PRE-ENGAGEMENT',
+    scenario: 'CyberHealth has been approached by MedTechPro Hospital (MTPH) to conduct a penetration test. Before you can begin, you must establish the legal and operational foundations. Your first task is to set up the engagement correctly.',
+    concept: '<strong>IB CONCEPT:</strong> A penetration test without written authorisation is legally equivalent to criminal hacking. The Rules of Engagement (RoE) defines scope, timing, and permitted techniques.',
+    challenges: [
+      {
+        q: 'You are about to begin testing MTPH. What must you have before running the first scan?',
+        opts: ['A list of all MTPH IP addresses', 'A signed Rules of Engagement document authorising the test', 'Admin credentials for the EHR system', 'A full network diagram from MTPH'],
+        ans: 1,
+        terminal: [
+          { type: 'prompt', text: 'root@cyberhealth:~# ./init_engagement --target=MTPH' },
+          { type: 'output', text: 'Checking legal authorisation...' },
+          { type: 'success', text: '[OK] Rules of Engagement document verified and signed.' },
+          { type: 'output', text: 'Scope defined: Patient Portal, EHR DB, Internal LAN, IoT Devices' },
+          { type: 'output', text: 'Testing window: 22:00 - 05:00 (low patient-care hours)' },
+          { type: 'success', text: 'PRE-ENGAGEMENT COMPLETE. You may proceed.' },
+        ],
+        exp: 'Without a signed RoE, every action is criminal hacking regardless of intent. This must exist before a single packet is sent.'
+      },
+      {
+        q: 'MTPH has life-critical ICU systems. How should you handle them in the RoE scope?',
+        opts: ['Include them with standard automated scanning', 'Exclude them completely and never test them', 'Include them but with manual techniques only and during off-peak hours', 'Test them last after other systems'],
+        ans: 2,
+        terminal: [
+          { type: 'prompt', text: 'root@cyberhealth:~# cat scope.conf | grep ICU' },
+          { type: 'amber', text: '[NOTICE] ICU devices flagged as life-critical.' },
+          { type: 'output', text: 'Policy: MANUAL INSPECTION ONLY on ICU monitors, infusion pumps, ventilators.' },
+          { type: 'output', text: 'Automated scanning PROHIBITED on patient-critical IoT devices.' },
+          { type: 'success', text: 'ICU handling protocol loaded. Patient safety first.' },
+        ],
+        exp: 'Life-critical devices must be tested manually only — automated scanning could crash them and endanger patients. Complete exclusion would leave dangerous gaps.'
+      }
+    ]
+  },
+  {
+    title: 'MISSION 2: INTELLIGENCE GATHERING',
+    scenario: 'Pre-engagement is complete. Now you must gather intelligence on MTPH using only publicly available sources — no touching their systems yet. You\'re building a picture of their attack surface from the outside.',
+    concept: '<strong>IB CONCEPT:</strong> OSINT (Open Source Intelligence) uses publicly available data only. It is entirely legal. Key sources: LinkedIn, job ads, WHOIS, DNS records, and search engine dorking.',
+    challenges: [
+      {
+        q: 'A MTPH job advertisement reads: "Must have experience with Epic EHR version 12.3." What useful intelligence does this reveal?',
+        opts: ['The hospital\'s budget', 'The exact EHR software version, enabling targeted CVE lookups', 'The number of patients at MTPH', 'The hospital\'s network topology'],
+        ans: 1,
+        terminal: [
+          { type: 'prompt', text: 'root@cyberhealth:~# ./osint_gather.py --source=linkedin,jobads --target=MTPH' },
+          { type: 'output', text: 'Scanning public job listings...' },
+          { type: 'amber', text: '[INTEL] Job ad found: "Epic EHR v12.3 experience required"' },
+          { type: 'prompt', text: 'root@cyberhealth:~# searchsploit "Epic EHR 12.3"' },
+          { type: 'success', text: 'CVE-2024-1337: Epic EHR 12.3 - SQL Injection in /patient/login' },
+          { type: 'success', text: 'OSINT PHASE COMPLETE. 3 exploitable CVEs identified.' },
+        ],
+        exp: 'Job ads inadvertently reveal technology stacks. Armed with exact version numbers, CyberHealth can search the CVE database for known vulnerabilities in that specific version — no hacking required.'
+      },
+      {
+        q: 'You use "site:mtph.org filetype:pdf" in Google. What technique is this?',
+        opts: ['SQL Injection', 'Port Scanning', 'Search Engine Dorking (OSINT)', 'XSS Attack'],
+        ans: 2,
+        terminal: [
+          { type: 'prompt', text: 'root@cyberhealth:~# ./dork.sh "site:mtph.org filetype:pdf"' },
+          { type: 'output', text: 'Executing Google dorking query...' },
+          { type: 'amber', text: '[FOUND] mtph.org/internal/network_overview_2023.pdf' },
+          { type: 'amber', text: '[FOUND] mtph.org/hr/staff_directory_q3.pdf' },
+          { type: 'success', text: 'Network diagram and 47 staff names extracted from public files.' },
+          { type: 'error', text: '[WARNING] These files should have required authentication. Security misconfiguration.' },
+        ],
+        exp: 'Search engine dorking uses advanced operators to find accidentally exposed sensitive files. No hacking — Google indexed these files because MTPH didn\'t restrict access properly.'
+      }
+    ]
+  },
+  {
+    title: 'MISSION 3: VULNERABILITY ANALYSIS',
+    scenario: 'Intelligence gathering is complete. You now have a detailed map of MTPH\'s systems. Time to analyse them for actual vulnerabilities — this phase combines automated scanning tools with careful manual techniques.',
+    concept: '<strong>IB CONCEPT:</strong> Automated tools (Nessus, Nmap) find known CVEs at scale. Manual techniques find logic flaws and custom code vulnerabilities that automated tools miss. Life-critical systems: manual only.',
+    challenges: [
+      {
+        q: 'Nmap reveals that the MTPH patient portal runs Apache Tomcat 7.0.39. What is your NEXT step?',
+        opts: ['Immediately exploit the server', 'Search the CVE database for known vulnerabilities in Apache Tomcat 7.0.39', 'Shut down the service and report it', 'Notify the hospital\'s nursing staff'],
+        ans: 1,
+        terminal: [
+          { type: 'prompt', text: 'root@cyberhealth:~# nmap -sV 10.20.30.40' },
+          { type: 'output', text: '80/tcp  open  http    Apache Tomcat 7.0.39' },
+          { type: 'output', text: '443/tcp open  https   Apache Tomcat 7.0.39' },
+          { type: 'prompt', text: 'root@cyberhealth:~# searchsploit "Apache Tomcat 7.0.39"' },
+          { type: 'success', text: 'CVE-2019-0232: Remote Code Execution via CGI Servlet' },
+          { type: 'success', text: 'CVE-2020-1938: AJP Request Injection (GhostCat)' },
+          { type: 'amber', text: '[HIGH SEVERITY] 2 critical vulnerabilities confirmed in running version.' },
+        ],
+        exp: 'After identifying the software version via Nmap, the next step is always to search for known CVEs for that exact version before attempting any exploitation.'
+      },
+      {
+        q: 'You discover a potential SQL injection point in the MTPH patient login form. It will be tested on which type of database?',
+        opts: ['The live patient database with real EHR records', 'The IT administrator\'s local machine', 'A test/staging database with anonymised synthetic data', 'The hospital\'s financial accounting system'],
+        ans: 2,
+        terminal: [
+          { type: 'prompt', text: 'root@cyberhealth:~# sqlmap -u "https://mtph.org/login" --data="user=test&pass=test"' },
+          { type: 'amber', text: '[POLICY CHECK] Target: Live production database detected.' },
+          { type: 'error', text: '[HALT] ETHICAL CONSTRAINT: Cannot test against live patient data.' },
+          { type: 'output', text: 'Switching to staging environment with anonymised test records...' },
+          { type: 'success', text: 'SQLi confirmed on staging: Parameter "user" is injectable.' },
+          { type: 'success', text: 'VULNERABILITY DOCUMENTED. No real patient data accessed.' },
+        ],
+        exp: 'Testing SQLi against live patient data — even in a pentest — risks exposing real EHRs and violates data protection law. A staging environment with synthetic data is always used instead.'
+      }
+    ]
+  },
+  {
+    title: 'MISSION 4: SOCIAL ENGINEERING',
+    scenario: 'Technical vulnerabilities are documented. Now you must test the human factor — MTPH\'s staff. Social engineering tests whether employees can be manipulated into disclosing credentials or clicking malicious links.',
+    concept: '<strong>IB CONCEPT:</strong> Social engineering exploits human psychology, not technology. Phishing (email), vishing (phone), and pretexting are all covered. Human error often bypasses the most secure technical defences.',
+    challenges: [
+      {
+        q: 'You call a nurse station pretending to be IT support and ask for VPN credentials. Which social engineering technique is this?',
+        opts: ['Phishing', 'SQL Injection', 'Vishing', 'Port Scanning'],
+        ans: 2,
+        terminal: [
+          { type: 'prompt', text: 'root@cyberhealth:~# ./social_eng.sh --mode=vishing --target=nurse_station_3B' },
+          { type: 'output', text: 'Initiating call... spoofing number as "IT Department +44 7700 900000"' },
+          { type: 'amber', text: '[CALL CONNECTED]' },
+          { type: 'output', text: 'Scenario: "Hi, this is James from IT. We\'re seeing an issue with your VPN account..."' },
+          { type: 'error', text: '[RESULT] Nurse disclosed VPN credentials within 90 seconds.' },
+          { type: 'success', text: 'VISHING SUCCESS. Human vulnerability confirmed. Logged for report.' },
+        ],
+        exp: 'Vishing (voice phishing) uses phone calls to impersonate trusted figures. It exploits social norms of politeness, trust in authority, and urgency — bypassing all technical security controls.'
+      },
+      {
+        q: 'After the vishing call, the nurse asks you to prove you\'re from IT. What does this demonstrate?',
+        opts: ['A vulnerability in the EHR system', 'Effective security awareness training and healthy scepticism', 'A buffer overflow in the phone system', 'Poor network configuration at MTPH'],
+        ans: 1,
+        terminal: [
+          { type: 'output', text: 'Nurse: "Can you give me your employee ID number to verify?"' },
+          { type: 'amber', text: '[UNEXPECTED RESPONSE] Target is requesting verification.' },
+          { type: 'success', text: '[POSITIVE FINDING] This staff member has been trained to verify callers.' },
+          { type: 'output', text: 'RECOMMENDATION: This response should be commended and used as a training example.' },
+          { type: 'output', text: 'RECOMMEND: Roll out verification training to all MTPH staff.' },
+          { type: 'success', text: 'SOCIAL ENGINEERING PHASE DOCUMENTED.' },
+        ],
+        exp: 'Asking for verification demonstrates effective security awareness training. CyberHealth should highlight this as a positive finding and recommend it as a model behaviour for all staff.'
+      }
+    ]
+  },
+  {
+    title: 'MISSION 5: REPORTING',
+    scenario: 'All testing phases are complete. Your team has discovered 14 vulnerabilities across MTPH\'s systems. Now you must compile a professional report that enables MTPH to act on your findings — this is the primary deliverable of the entire engagement.',
+    concept: '<strong>IB CONCEPT:</strong> The penetration test report must include: executive summary, technical findings with severity ratings, evidence (screenshots/logs), and specific actionable remediation recommendations. Stored and transmitted securely.',
+    challenges: [
+      {
+        q: 'MTPH\'s CEO (non-technical) will read the report first. What section is designed for her?',
+        opts: ['The CVE technical appendix', 'The Nmap scan output logs', 'The executive summary — a non-technical overview of key risks and business impact', 'The raw SQLmap injection payloads'],
+        ans: 2,
+        terminal: [
+          { type: 'prompt', text: 'root@cyberhealth:~# ./generate_report.py --template=full_pentest' },
+          { type: 'output', text: 'Building report sections...' },
+          { type: 'success', text: '[1] Executive Summary — Plain English, business impact, priorities' },
+          { type: 'output', text: '[2] Technical Findings — CVEs, severity ratings, reproduction steps' },
+          { type: 'output', text: '[3] Evidence — Screenshots, terminal logs, timestamps' },
+          { type: 'output', text: '[4] Remediation — Specific actionable fixes per vulnerability' },
+          { type: 'success', text: 'Report compiled. Encrypting for secure transmission...' },
+        ],
+        exp: 'The executive summary translates technical findings into business language — risk levels, potential patient impact, and business cost — so management can make informed decisions without needing technical knowledge.'
+      },
+      {
+        q: 'You find a critical zero-day vulnerability in MTPH\'s patient portal. What do you do FIRST?',
+        opts: ['Post it on a cybersecurity forum to warn others', 'Exploit it fully to understand its complete impact', 'Report it immediately and privately to MTPH only, following responsible disclosure', 'Sell the information to a security research firm'],
+        ans: 2,
+        terminal: [
+          { type: 'error', text: '[CRITICAL] CVE-UNKNOWN: Zero-day RCE in MTPH /patient/upload endpoint' },
+          { type: 'amber', text: '[ALERT] No public patch exists for this vulnerability.' },
+          { type: 'prompt', text: 'root@cyberhealth:~# ./notify_client.sh --priority=CRITICAL --recipient=MTPH_CISO' },
+          { type: 'output', text: 'Notifying MTPH CISO via encrypted channel...' },
+          { type: 'success', text: '[SENT] Encrypted notification delivered. MTPH alerted within 30 minutes.' },
+          { type: 'success', text: 'RESPONSIBLE DISCLOSURE PROTOCOL FOLLOWED. Mission complete.' },
+        ],
+        exp: 'Responsible disclosure means reporting privately to the affected organisation first, giving them time to patch before any public disclosure. Public disclosure of an unpatched zero-day would directly endanger MTPH patients.'
+      }
+    ]
+  }
+];
+
+// ── Game state ──
+let gameState = {
+  currentMission: -1,
+  currentChallenge: 0,
+  xp: 0,
+  completedMissions: new Set(),
+  missionAnswered: false
+};
+
+const RANKS = [
+  { min: 0,   label: 'TRAINEE' },
+  { min: 100, label: 'ANALYST' },
+  { min: 200, label: 'JUNIOR HACKER' },
+  { min: 350, label: 'PEN TESTER' },
+  { min: 500, label: 'ETHICAL HACKER' },
+];
+
+function getRank(xp) {
+  let rank = RANKS[0].label;
+  for (const r of RANKS) { if (xp >= r.min) rank = r.label; }
+  return rank;
+}
+
+function renderMissionList() {
+  const list = document.getElementById('missionList');
+  list.innerHTML = missions.map((m, i) => `
+    <button class="mission-btn ${gameState.completedMissions.has(i) ? 'completed' : ''} ${gameState.currentMission === i ? 'active' : ''}"
+      onclick="startMission(${i})">M${i+1}: ${m.title.replace('MISSION '+(i+1)+': ', '')}</button>
+  `).join('');
+}
+
+function startMission(idx) {
+  gameState.currentMission = idx;
+  gameState.currentChallenge = 0;
+  gameState.missionAnswered = false;
+  renderMissionList();
+
+  const m = missions[idx];
+  document.getElementById('briefTitle').textContent = m.title;
+  document.getElementById('briefScenario').textContent = m.scenario;
+  document.getElementById('briefConcept').innerHTML = m.concept;
+  document.getElementById('missionStatus').textContent = 'IN PROGRESS';
+  document.getElementById('missionStatus').style.color = 'var(--amber)';
+
+  clearTerminal();
+  addTermLine('prompt', `> MISSION ${idx+1} INITIATED: ${m.title}`);
+  addTermLine('output', `> Establishing secure connection to MTPH...`);
+  addTermLine('system', `> ${m.scenario.substring(0, 80)}...`);
+
+  renderChallenge();
+}
+
+function clearTerminal() {
+  document.getElementById('gameTerm').innerHTML = '';
+}
+
+function addTermLine(type, text, delay = 0) {
+  setTimeout(() => {
+    const term = document.getElementById('gameTerm');
+    const div = document.createElement('div');
+    div.className = `term-line ${type}`;
+    div.textContent = text;
+    term.appendChild(div);
+    term.scrollTop = term.scrollHeight;
+  }, delay);
+}
+
+function renderChallenge() {
+  const m = missions[gameState.currentMission];
+  const ch = m.challenges[gameState.currentChallenge];
+  document.getElementById('chalQ').style.display = '';
+  document.getElementById('chalQ').textContent = `CHALLENGE ${gameState.currentChallenge + 1}/${m.challenges.length}: ${ch.q}`;
+  document.getElementById('chalOpts').style.display = '';
+  document.getElementById('nextMissionBtn').style.display = 'none';
+  document.getElementById('chalOpts').innerHTML = ch.opts.map((o, i) => `
+    <button class="ch-btn" onclick="gameAnswer(${i})">[${String.fromCharCode(65+i)}] ${o}</button>
+  `).join('');
+}
+
+function gameAnswer(chosen) {
+  if (gameState.missionAnswered) return;
+  const m = missions[gameState.currentMission];
+  const ch = m.challenges[gameState.currentChallenge];
+  const btns = document.querySelectorAll('.ch-btn');
+  btns.forEach(b => b.disabled = true);
+  btns[ch.ans].classList.add('correct');
+
+  if (chosen !== ch.ans) {
+    btns[chosen].classList.add('wrong');
+    addTermLine('error', `> WRONG CHOICE: ${ch.opts[chosen]}`);
+    addTermLine('error', `> CORRECT: ${ch.opts[ch.ans]}`);
+    addTermLine('amber', `> ${ch.exp}`);
+  } else {
+    const xpGain = 50;
+    gameState.xp += xpGain;
+    updateXP();
+
+    // Play terminal output with delays
+    ch.terminal.forEach((line, idx) => {
+      setTimeout(() => {
+        const cls = line.type === 'amber' ? 'info' : line.type;
+        addTermLine(cls, line.text);
+      }, idx * 180);
+    });
+
+    setTimeout(() => {
+      addTermLine('success', `> +${xpGain} XP EARNED`);
+    }, ch.terminal.length * 180);
+  }
+
+  // Move to next challenge or complete mission
+  gameState.currentChallenge++;
+  if (gameState.currentChallenge < m.challenges.length) {
+    setTimeout(() => {
+      renderChallenge();
+    }, chosen === ch.ans ? ch.terminal.length * 180 + 800 : 1000);
+  } else {
+    // Mission complete
+    gameState.missionAnswered = true;
+    gameState.completedMissions.add(gameState.currentMission);
+    renderMissionList();
+    document.getElementById('missionStatus').textContent = 'COMPLETE';
+    document.getElementById('missionStatus').style.color = 'var(--green)';
+    document.getElementById('chalQ').style.display = 'none';
+    document.getElementById('chalOpts').style.display = 'none';
+
+    const allDone = gameState.completedMissions.size >= missions.length;
+
+    setTimeout(() => {
+      addTermLine('success', `> ████████████████████ MISSION ${gameState.currentMission + 1} COMPLETE`);
+      if (allDone) {
+        addTermLine('success', `> ALL MISSIONS COMPLETE. RANK: ${getRank(gameState.xp)}`);
+        addTermLine('success', `> YOU ARE READY FOR IB CS PAPER 3.`);
+        document.getElementById('nextMissionBtn').textContent = '🏆 ALL MISSIONS COMPLETE — RESTART';
+        document.getElementById('nextMissionBtn').onclick = () => { gameState = { currentMission: -1, currentChallenge: 0, xp: 0, completedMissions: new Set(), missionAnswered: false }; updateXP(); renderMissionList(); clearTerminal(); addTermLine('system', '> SIMULATION RESET. SELECT MISSION.'); document.getElementById('briefTitle').textContent = 'AWAITING MISSION...'; document.getElementById('briefScenario').textContent = 'Select a mission from the sidebar.'; document.getElementById('briefConcept').innerHTML = ''; };
+      } else {
+        document.getElementById('nextMissionBtn').textContent = 'PROCEED TO NEXT PHASE ▶';
+        document.getElementById('nextMissionBtn').onclick = gameNextMission;
+      }
+      document.getElementById('nextMissionBtn').style.display = '';
+    }, 1200);
+  }
+}
+
+function gameNextMission() {
+  const next = gameState.currentMission + 1;
+  if (next < missions.length) startMission(next);
+}
+
+function updateXP() {
+  const pct = Math.min(gameState.xp / 500 * 100, 100);
+  document.getElementById('xpFill').style.width = pct + '%';
+  document.getElementById('xpVal').textContent = `${gameState.xp} / 500`;
+  document.getElementById('sideXp').textContent = gameState.xp;
+  document.getElementById('sideRank').textContent = getRank(gameState.xp);
+}
+
+renderMissionList();
+</script>
+
+</body>
+</html>
